@@ -297,3 +297,236 @@ loadAll();
 
 
 
+
+<script id="pharmacy-core-logic">
+function switchPanel(panelId, btn) {
+  var list = document.querySelectorAll('.sec-panel');
+  for (var i = 0; i < list.length; i++) { list[i].style.display = 'none'; }
+  var btns = document.querySelectorAll('.tab-btn');
+  for (var j = 0; j < btns.length; j++) { btns[j].classList.remove('active'); }
+  var target = document.getElementById(panelId);
+  if (target) { target.style.display = 'block'; }
+  if (btn) { btn.classList.add('active'); }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('pharm_ok');
+  var p = document.getElementById('pBox');
+  if (p) { p.value = ''; }
+  var g = document.getElementById('loginGate');
+  if (g) { g.style.display = 'flex'; }
+}
+
+function applyBrand() {
+  var name = localStorage.getItem('pharm_name');
+  if (name) {
+    var bh = document.getElementById('brandHeader');
+    if (bh) { bh.innerHTML = '💊 ' + name + ' <span>ዘመናዊ የፋርማሲና ክሊኒክ አስተዳደር ሲስተም</span>'; }
+    var lt = document.getElementById('loginTitle');
+    if (lt) { lt.innerText = name; }
+    var rt = document.getElementById('receiptTitle');
+    if (rt) { rt.innerText = name; }
+  }
+}
+
+function renameBrand() {
+  var cur = localStorage.getItem('pharm_name') || 'TanaCloud Pharmacy and Clinic';
+  var next = prompt('አዲሱን የፋርማሲ ወይም የክሊኒክ ስም ያስገቡ፦', cur);
+  if (next) {
+    if (next.trim().length > 0) {
+      localStorage.setItem('pharm_name', next.trim());
+      applyBrand();
+      alert('✅ ስሙ ተቀይሯል!');
+    }
+  }
+}
+
+function filterRows(inp, tbodyId) {
+  var q = inp.value.toLowerCase().trim();
+  var rows = document.querySelectorAll('#' + tbodyId + ' tr');
+  for (var i = 0; i < rows.length; i++) {
+    var txt = rows[i].innerText.toLowerCase();
+    var ok = !q ? true : (txt.indexOf(q) !== -1);
+    rows[i].style.display = ok ? '' : 'none';
+  }
+}
+
+function updatePreview() {
+  var sel = document.getElementById('saleMedSelect');
+  if (!sel) { return; }
+  if (sel.selectedIndex < 0) { return; }
+  var opt = sel.options[sel.selectedIndex];
+  var price = opt ? parseFloat(opt.getAttribute('data-price') || '0') : 0;
+  var qty = parseInt(document.getElementById('saleQty').value || '1');
+  var tot = document.getElementById('salePreviewTotal');
+  if (tot) { tot.innerText = (price * qty).toLocaleString() + ' ETB'; }
+}
+
+async function loadAll() {
+  try {
+    var r1 = await fetch('/api/medicines');
+    var r2 = await fetch('/api/sales');
+    var r3 = await fetch('/api/patients');
+    var meds = await r1.json();
+    var sales = await r2.json();
+    var pats = await r3.json();
+
+    var kM = document.getElementById('kpiMeds');
+    if (kM) { kM.innerText = meds.length; }
+
+    var alerts = 0;
+    var medBody = document.getElementById('medTableBody');
+    var alertBody = document.getElementById('alertTableBody');
+    var sel = document.getElementById('saleMedSelect');
+    if (medBody) { medBody.innerHTML = ''; }
+    if (alertBody) { alertBody.innerHTML = ''; }
+    if (sel) { sel.innerHTML = ''; }
+
+    for (var i = 0; i < meds.length; i++) {
+      var m = meds[i];
+      var low = m.stock <= 10;
+      var exp = false;
+      if (m.expiry_date) {
+        exp = ((new Date(m.expiry_date) - new Date()) / 86400000) <= 90;
+      }
+      var hasAlert = low ? true : exp;
+      if (hasAlert) { alerts++; }
+
+      var badge = '<span class="badge badge-ok">✅ ጤናማ</span>';
+      if (low) { badge = '<span class="badge badge-low">⚠️ ክምችት አነስተኛ</span>'; }
+      else if (exp) { badge = '<span class="badge badge-low">⏳ ጊዜው ሊያልፍ ተቃርቧል</span>'; }
+
+      if (medBody) {
+        medBody.innerHTML += '<tr><td><strong>' + m.name + '</strong></td><td>' + m.category + '</td><td>' + m.buy_price + ' ETB</td><td><strong>' + m.sell_price + ' ETB</strong></td><td><strong>' + m.stock + '</strong></td><td>' + m.expiry_date + '</td><td>' + badge + '</td><td><button type="button" class="btn btn-sm" onclick="restock(' + m.id + ',' + m.stock + ')">+ ክምችት</button> <button type="button" class="btn btn-danger" onclick="delMed(' + m.id + ')">አጥፋ</button></td></tr>';
+      }
+      if (hasAlert) {
+        if (alertBody) {
+          alertBody.innerHTML += '<tr><td><strong>' + m.name + '</strong></td><td>' + m.category + '</td><td><strong>' + m.stock + '</strong></td><td>' + m.expiry_date + '</td><td>' + badge + '</td></tr>';
+        }
+      }
+      if (sel) {
+        sel.innerHTML += '<option value="' + m.id + '" data-price="' + m.sell_price + '">' + m.name + ' — ' + m.sell_price + ' ETB (ቀሪ: ' + m.stock + ')</option>';
+      }
+    }
+
+    if (alertBody) {
+      if (alertBody.innerHTML === '') {
+        alertBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#059669;">✅ ሁሉም መድኃኒቶች በበቂ ክምችት ላይ ናቸው!</td></tr>';
+      }
+    }
+    var kA = document.getElementById('kpiAlerts');
+    if (kA) { kA.innerText = alerts; }
+    updatePreview();
+
+    var tSales = 0;
+    var tProfit = 0;
+    var sBody = document.getElementById('salesTableBody');
+    if (sBody) { sBody.innerHTML = ''; }
+    for (var j = 0; j < sales.length; j++) {
+      var s = sales[j];
+      tSales += s.total_price;
+      tProfit += s.profit;
+      if (sBody) {
+        sBody.innerHTML += '<tr><td>' + s.sale_time + '</td><td>' + s.customer_name + '</td><td><strong>' + s.medicine_name + '</strong></td><td>' + s.quantity + '</td><td><strong>' + s.total_price + ' ETB</strong></td><td style="color:#059669;font-weight:bold;">+' + s.profit + ' ETB</td><td>' + s.payment_method + '</td></tr>';
+      }
+    }
+    var kS = document.getElementById('kpiSales');
+    var kP = document.getElementById('kpiProfit');
+    if (kS) { kS.innerText = tSales.toLocaleString() + ' ETB'; }
+    if (kP) { kP.innerText = tProfit.toLocaleString() + ' ETB'; }
+
+    var pBody = document.getElementById('patientTableBody');
+    if (pBody) { pBody.innerHTML = ''; }
+    for (var k = 0; k < pats.length; k++) {
+      var p = pats[k];
+      if (pBody) {
+        pBody.innerHTML += '<tr><td>' + p.visit_date + '</td><td><strong>' + p.full_name + '</strong></td><td>' + p.phone + '</td><td>' + p.age_gender + '</td><td>' + p.diagnosis + '</td><td>' + p.prescription + '</td></tr>';
+      }
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function submitSale() {
+  var res = await fetch('/api/sales', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      medicine_id: document.getElementById('saleMedSelect').value,
+      quantity: document.getElementById('saleQty').value,
+      customer_name: document.getElementById('saleCustomer').value || 'Walk-in Customer',
+      payment_method: document.getElementById('salePayMethod').value
+    })
+  });
+  if (!res.ok) { var e = await res.json(); alert(e.detail); return; }
+  var s = await res.json();
+  document.getElementById('receiptContent').innerHTML = '<div><strong>ደረሰኝ ቁጥር:</strong> #' + s.id + '</div><div><strong>ቀን/ሰዓት:</strong> ' + s.sale_time + '</div><div><strong>ደንበኛ:</strong> ' + s.customer_name + '</div><hr><div><strong>መድኃኒት:</strong> ' + s.medicine_name + '</div><div><strong>ብዛት:</strong> ' + s.quantity + ' x ' + s.unit_price + ' ETB</div><div style="font-size:16px;margin-top:6px;"><strong>ጠቅላላ ክፍያ: ' + s.total_price + ' ETB</strong></div><div><strong>ክፍያ መንገድ:</strong> ' + s.payment_method + '</div>';
+  document.getElementById('receiptModal').style.display = 'flex';
+  loadAll();
+}
+
+async function addMedicine() {
+  var res = await fetch('/api/medicines', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: document.getElementById('medName').value,
+      category: document.getElementById('medCat').value,
+      buy_price: document.getElementById('medBuy').value,
+      sell_price: document.getElementById('medSell').value,
+      stock: document.getElementById('medStock').value,
+      expiry_date: document.getElementById('medExpiry').value
+    })
+  });
+  if (!res.ok) { var e = await res.json(); alert(e.detail); return; }
+  document.getElementById('medName').value = '';
+  alert('✅ መድኃኒቱ በተሳካ ሁኔታ ተመዝግቧል!');
+  loadAll();
+}
+
+async function restock(id, cur) {
+  var add = prompt('ምን ያህል ተጨማሪ ብዛት (Stock) ይጨመር?', '20');
+  if (!add) { return; }
+  if (isNaN(add)) { return; }
+  await fetch('/api/medicines/' + id, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ stock: cur + parseInt(add) })
+  });
+  loadAll();
+}
+
+async function delMed(id) {
+  if (!confirm('ይህንን መድኃኒት ማጥፋት ይፈልጋሉ?')) { return; }
+  await fetch('/api/medicines/' + id, { method: 'DELETE' });
+  loadAll();
+}
+
+async function addPatient() {
+  var res = await fetch('/api/patients', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      full_name: document.getElementById('patName').value,
+      phone: document.getElementById('patPhone').value,
+      age_gender: document.getElementById('patAge').value,
+      diagnosis: document.getElementById('patDiag').value,
+      prescription: document.getElementById('patPresc').value
+    })
+  });
+  if (!res.ok) { var e = await res.json(); alert(e.detail); return; }
+  document.getElementById('patName').value = '';
+  document.getElementById('patDiag').value = '';
+  document.getElementById('patPresc').value = '';
+  alert('✅ የታካሚው መዝገብ ተቀምጧል!');
+  loadAll();
+}
+
+applyBrand();
+if (sessionStorage.getItem('pharm_ok') === '1') {
+  var lg = document.getElementById('loginGate');
+  if (lg) { lg.style.display = 'none'; }
+}
+loadAll();
+</script>
