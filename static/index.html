@@ -63,7 +63,6 @@
   .logout-pill { background: #dc2626 !important; color: #ffffff !important; border-color: #ef4444 !important; }
 
   .container { max-width: 1260px; margin: 18px auto; padding: 0 16px; }
-
   .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 18px; }
   .kpi-card { background: var(--card); padding: 16px 20px; border-radius: 12px; border-left: 5px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
   .kpi-card.warn { border-left-color: var(--danger); }
@@ -82,10 +81,7 @@
   .form-group input, .form-group select {
     width: 100%; padding: 9px 11px; border: 1.5px solid #cbd5e1; border-radius: 7px; font-size: 14px; outline: none;
   }
-  .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
-
   .btn { background: var(--primary); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; }
-  .btn:hover { opacity: 0.92; }
   .btn-success { background: var(--success); }
   .btn-danger { background: var(--danger); padding: 6px 10px; font-size: 12.5px; }
   .btn-sm { padding: 6px 11px; font-size: 12.5px; }
@@ -94,7 +90,6 @@
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   th { background: #0f172a; color: #fff; padding: 10px; text-align: left; }
   td { padding: 9px 10px; border-bottom: 1px solid #e2e8f0; }
-  tr:hover { background: #f8fafc; }
 
   .badge { padding: 4px 9px; border-radius: 12px; font-size: 11.5px; font-weight: 700; display: inline-block; }
   .badge-ok { background: #dcfce7; color: #166534; }
@@ -127,9 +122,9 @@
     </div>
     <div class="login-field">
       <label>የይለፍ ቃል (Password)</label>
-      <input type="password" id="pLoginPass" placeholder="admin123" onkeydown="if(event.key==='Enter') doPharmLogin()">
+      <input type="password" id="pLoginPass" placeholder="admin123">
     </div>
-    <button type="button" class="login-submit" onclick="doPharmLogin()">🔐 ግባ (Login)</button>
+    <button type="button" id="btnDoLogin" class="login-submit">🔐 ግባ (Login)</button>
     <div id="pLoginErr" style="color:#dc2626; font-size:13px; font-weight:600; margin-top:10px;"></div>
   </div>
 </div>
@@ -166,7 +161,6 @@
     </div>
   </div>
 
-  <!-- 1. POS -->
   <div id="tab-pos" class="section-panel active">
     <div class="card">
       <h3>🛒 ፈጣን የመድኃኒት መሸጫ (Point of Sale & Receipt)</h3>
@@ -207,14 +201,13 @@
     </div>
   </div>
 
-  <!-- 2. Inventory -->
   <div id="tab-inventory" class="section-panel">
     <div class="card">
       <h3>➕ አዲስ መድኃኒት መመዝገቢያ</h3>
-
-የመድኃኒት ስም
-ምድብ (Category)
-
+      <div class="form-grid">
+        <div class="form-group"><label>የመድኃኒት ስም</label><input type="text" id="medName" placeholder="ለምሳሌ፡ Azithromycin 500mg"></div>
+        <div class="form-group"><label>ምድብ (Category)</label>
+          <select id="medCat">
 Antibiotic
 Painkiller
 Antimalarial
@@ -259,9 +252,9 @@ TanaCloud Pharmacy
 ዝጋ
 
 
-let allMedicines = [];
+var allMedicines = [];
 function applySavedPharmacyName() {
-const savedName = localStorage.getItem('pharmacy_brand_name');
+var savedName = localStorage.getItem('pharmacy_brand_name');
 if (savedName) {
 document.getElementById('mainBrandHeader').innerHTML = '💊 ' + savedName + ' ዘመናዊ የፋርማሲና ክሊኒክ አስተዳደር ሲስተም';
 document.getElementById('loginBrandTitle').innerText = savedName;
@@ -269,17 +262,20 @@ document.getElementById('receiptBrandTitle').innerText = savedName;
 }
 }
 function changeBrandName() {
-const cur = localStorage.getItem('pharmacy_brand_name') || 'TanaCloud Pharmacy & Clinic';
-const nextName = prompt('የፋርማሲው ወይም የክሊኒኩን አዲስ ስም ያስገቡ፦', cur);
-if (nextName && nextName.trim()) {
-localStorage.setItem('pharmacy_brand_name', nextName.trim());
+var cur = localStorage.getItem('pharmacy_brand_name') || 'TanaCloud Pharmacy & Clinic';
+var nextName = prompt('የፋርማሲው ወይም የክሊኒኩን አዲስ ስም ያስገቡ፦', cur);
+if (nextName) {
+var trimmed = nextName.trim();
+if (trimmed.length > 0) {
+localStorage.setItem('pharmacy_brand_name', trimmed);
 applySavedPharmacyName();
-alert('✅ ስሙ ወደ "' + nextName.trim() + '" ተቀይሯል!');
+alert('✅ ስሙ ወደ "' + trimmed + '" ተቀይሯል!');
+}
 }
 }
 function doPharmLogin() {
-const u = (document.getElementById('pLoginUser').value || '').trim();
-const p = (document.getElementById('pLoginPass').value || '').trim();
+var u = (document.getElementById('pLoginUser').value || '').trim();
+var p = (document.getElementById('pLoginPass').value || '').trim();
 if (u === 'admin' && p === 'admin123') {
 sessionStorage.setItem('pharm_auth', '1');
 document.getElementById('pharmLoginOverlay').style.display = 'none';
@@ -294,122 +290,124 @@ document.getElementById('pLoginPass').value = '';
 document.getElementById('pharmLoginOverlay').style.display = 'flex';
 }
 function switchTab(name, btn) {
-document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-if (btn) btn.classList.add('active');
-document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
-const target = document.getElementById('tab-' + name);
-if (target) target.classList.add('active');
+document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+if (btn) { btn.classList.add('active'); }
+document.querySelectorAll('.section-panel').forEach(function(p) { p.classList.remove('active'); });
+var target = document.getElementById('tab-' + name);
+if (target) { target.classList.add('active'); }
 }
 function filterTable(tbodyId, query) {
-const q = query.toLowerCase().trim();
-document.querySelectorAll('#' + tbodyId + ' tr').forEach(tr => {
-tr.style.display = !q || tr.innerText.toLowerCase().includes(q) ? '' : 'none';
+var q = query.toLowerCase().trim();
+document.querySelectorAll('#' + tbodyId + ' tr').forEach(function(tr) {
+var match = !q ? true : tr.innerText.toLowerCase().indexOf(q) !== -1;
+tr.style.display = match ? '' : 'none';
 });
 }
 function isExpiringSoon(dateStr) {
-if (!dateStr) return false;
-const exp = new Date(dateStr);
-const diffDays = (exp - new Date()) / (1000 * 60 * 60 * 24);
+if (!dateStr) { return false; }
+var exp = new Date(dateStr);
+var diffDays = (exp - new Date()) / (1000 * 60 * 60 * 24);
 return diffDays <= 90;
 }
 async function loadAllData() {
 try {
-const [medRes, salesRes, patRes] = await Promise.all([
-fetch('/api/medicines'), fetch('/api/sales'), fetch('/api/patients')
-]);
-allMedicines = await medRes.json();
-const sales = await salesRes.json();
-const patients = await patRes.json();
+var r1 = await fetch('/api/medicines');
+var r2 = await fetch('/api/sales');
+var r3 = await fetch('/api/patients');
+allMedicines = await r1.json();
+var sales = await r2.json();
+var patients = await r3.json();
 document.getElementById('kpiTotalMeds').innerText = allMedicines.length;
-let alertsCount = 0;
-const medBody = document.getElementById('medTableBody');
-const alertBody = document.getElementById('alertTableBody');
-const sel = document.getElementById('saleMedSelect');
+var alertsCount = 0;
+var medBody = document.getElementById('medTableBody');
+var alertBody = document.getElementById('alertTableBody');
+var sel = document.getElementById('saleMedSelect');
 medBody.innerHTML = '';
 alertBody.innerHTML = '';
 sel.innerHTML = '';
-allMedicines.forEach(m => {
-const low = m.stock <= 10;
-const exp = isExpiringSoon(m.expiry_date);
-if (low || exp) alertsCount++;
-let badge = '✅ ጤናማ';
-if (low && exp) badge = '⚠️ ሊያልቅ ነው & Expiry';
-else if (low) badge = '⚠️ ክምችት አነስተኛ (Low)';
-else if (exp) badge = '⏳ ጊዜው ሊያልፍ ተቃርቧል';
-medBody.innerHTML += `
-${m.name}
-${m.category}
-${m.buy_price} ETB
-${m.sell_price} ETB
-${m.stock}
-({m.expiry_date}
-){badge}
-`;
+allMedicines.forEach(function(m) {
+var low = m.stock <= 10;
+var exp = isExpiringSoon(m.expiry_date);
+if (low || exp) { alertsCount++; }
+var badge = '✅ ጤናማ';
+if (low && exp) { badge = '⚠️ ሊያልቅ ነው & Expiry'; }
+else if (low) { badge = '⚠️ ክምችት አነስተኛ (Low)'; }
+else if (exp) { badge = '⏳ ጊዜው ሊያልፍ ተቃርቧል'; }
+medBody.innerHTML += '' +
+'' + m.name + '' + m.category + '' +
+'' + m.buy_price + ' ETB' + m.sell_price + ' ETB' +
+'' + m.stock + '' + m.expiry_date + '' + badge + '' +
+'' +
+'+ ክምችት ' +
+'አጥፋ' +
+'';
 if (low || exp) {
-alertBody.innerHTML += <tr><td><strong>${m.name}</strong></td><td>${m.category}</td><td><strong>${m.stock}</strong></td><td>${m.expiry_date}</td><td>${badge}</td></tr>;
+alertBody.innerHTML += '' + m.name + '' + m.category + '' + m.stock + '' + m.expiry_date + '' + badge + '';
 }
-sel.innerHTML += <option value="${m.id}" data-price="${m.sell_price}">${m.name} — ${m.sell_price} ETB (ቀሪ: ${m.stock})</option>;
+sel.innerHTML += '' + m.name + ' — ' + m.sell_price + ' ETB (ቀሪ: ' + m.stock + ')';
 });
 if (alertBody.innerHTML === '') {
 alertBody.innerHTML = '✅ ሁሉም መድኃኒቶች በበቂ ክምችት ላይ ናቸው!';
 }
 document.getElementById('kpiAlerts').innerText = alertsCount;
 updateSalePreview();
-let totalSales = 0, totalProfit = 0;
-const salesBody = document.getElementById('salesTableBody');
+var totalSales = 0, totalProfit = 0;
+var salesBody = document.getElementById('salesTableBody');
 salesBody.innerHTML = '';
-sales.forEach(s => {
+sales.forEach(function(s) {
 totalSales += s.total_price;
 totalProfit += s.profit;
-salesBody.innerHTML += `
-${s.sale_time}
-({s.customer_name}
-){s.medicine_name}
-${s.quantity}
-${s.total_price} ETB
-+${s.profit} ETB
-${s.payment_method}
-`;
+salesBody.innerHTML += '' +
+'' + s.sale_time + '' + s.customer_name + '' + s.medicine_name + '' +
+'' + s.quantity + '' + s.total_price + ' ETB' +
+'+' + s.profit + ' ETB' + s.payment_method + '';
 });
 document.getElementById('kpiSales').innerText = totalSales.toLocaleString() + ' ETB';
 document.getElementById('kpiProfit').innerText = totalProfit.toLocaleString() + ' ETB';
-const patBody = document.getElementById('patientTableBody');
+var patBody = document.getElementById('patientTableBody');
 patBody.innerHTML = '';
-patients.forEach(p => {
-patBody.innerHTML += <tr><td>${p.visit_date}</td><td><strong>${p.full_name}</strong></td><td>${p.phone}</td><td>${p.age_gender}</td><td>${p.diagnosis}</td><td>${p.prescription}</td></tr>;
+patients.forEach(function(p) {
+patBody.innerHTML += '' + p.visit_date + '' + p.full_name + '' + p.phone + '' + p.age_gender + '' + p.diagnosis + '' + p.prescription + '';
 });
 } catch (err) {
 console.error(err);
 }
 }
 function updateSalePreview() {
-const sel = document.getElementById('saleMedSelect');
-const opt = sel.options[sel.selectedIndex];
-const price = opt ? parseFloat(opt.dataset.price || 0) : 0;
-const qty = parseInt(document.getElementById('saleQty').value || 1);
+var sel = document.getElementById('saleMedSelect');
+var opt = sel.options[sel.selectedIndex];
+var price = opt ? parseFloat(opt.getAttribute('data-price') || '0') : 0;
+var qty = parseInt(document.getElementById('saleQty').value || '1');
 document.getElementById('salePreviewTotal').innerText = (price * qty).toLocaleString() + ' ETB';
 }
 async function submitSale() {
-const medId = document.getElementById('saleMedSelect').value;
-const qty = parseInt(document.getElementById('saleQty').value || 1);
-const customer = document.getElementById('saleCustomer').value || 'Walk-in Customer';
-const payMethod = document.getElementById('salePayMethod').value;
-const res = await fetch('/api/sales', {
+var medId = document.getElementById('saleMedSelect').value;
+var qty = parseInt(document.getElementById('saleQty').value || '1');
+var customer = document.getElementById('saleCustomer').value || 'Walk-in Customer';
+var payMethod = document.getElementById('salePayMethod').value;
+var res = await fetch('/api/sales', {
 method: 'POST', headers: {'Content-Type': 'application/json'},
 body: JSON.stringify({ medicine_id: medId, quantity: qty, customer_name: customer, payment_method: payMethod })
 });
 if (!res.ok) {
-const err = await res.json();
+var err = await res.json();
 alert(err.detail || 'ስህተት ተፈጥሯል');
 return;
 }
-const sale = await res.json();
-document.getElementById('receiptContent').innerHTML = <div><strong>ደረሰኝ ቁጥር:</strong> #${sale.id}</div> <div><strong>ቀን/ሰዓት:</strong> ${sale.sale_time}</div> <div><strong>ደንበኛ:</strong> ${sale.customer_name}</div> <hr> <div><strong>መድኃኒት:</strong> ${sale.medicine_name}</div> <div><strong>ብዛት:</strong> ${sale.quantity} x ${sale.unit_price} ETB</div> <div style="font-size:16px; margin-top:6px;"><strong>ጠቅላላ ክፍያ: ${sale.total_price} ETB</strong></div> <div><strong>ክፍያ መንገድ:</strong> ${sale.payment_method}</div>;
+var sale = await res.json();
+document.getElementById('receiptContent').innerHTML =
+'ደረሰኝ ቁጥር: #' + sale.id + '' +
+'ቀን/ሰዓት: ' + sale.sale_time + '' +
+'ደንበኛ: ' + sale.customer_name + '' +
+'መድኃኒት: ' + sale.medicine_name + '' +
+'ብዛት: ' + sale.quantity + ' x ' + sale.unit_price + ' ETB' +
+'ጠቅላላ ክፍያ: ' + sale.total_price + ' ETB' +
+'ክፍያ መንገድ: ' + sale.payment_method + '';
 document.getElementById('receiptModal').style.display = 'flex';
 loadAllData();
 }
 async function addMedicine() {
-const payload = {
+var payload = {
 name: document.getElementById('medName').value,
 category: document.getElementById('medCat').value,
 buy_price: document.getElementById('medBuy').value,
@@ -417,15 +415,15 @@ sell_price: document.getElementById('medSell').value,
 stock: document.getElementById('medStock').value,
 expiry_date: document.getElementById('medExpiry').value
 };
-const res = await fetch('/api/medicines', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-if (!res.ok) { const e = await res.json(); alert(e.detail); return; }
+var res = await fetch('/api/medicines', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+if (!res.ok) { var e = await res.json(); alert(e.detail); return; }
 document.getElementById('medName').value = '';
 alert('✅ መድኃኒቱ በተሳካ ሁኔታ ተመዝግቧል!');
 loadAllData();
 }
 async function restockMed(id, currentStock) {
-const add = prompt('ምን ያህል ተጨማሪ ብዛት (Stock) ይጨመር?', '20');
-if (!add || isNaN(add)) return;
+var add = prompt('ምን ያህል ተጨማሪ ብዛት (Stock) ይጨመር?', '20');
+if (!add || isNaN(add)) { return; }
 await fetch('/api/medicines/' + id, {
 method: 'PUT', headers: {'Content-Type': 'application/json'},
 body: JSON.stringify({ stock: currentStock + parseInt(add) })
@@ -433,26 +431,30 @@ body: JSON.stringify({ stock: currentStock + parseInt(add) })
 loadAllData();
 }
 async function deleteMed(id) {
-if (!confirm('ይህንን መድኃኒት ማጥፋት ይፈልጋሉ?')) return;
+if (!confirm('ይህንን መድኃኒት ማጥፋት ይፈልጋሉ?')) { return; }
 await fetch('/api/medicines/' + id, { method: 'DELETE' });
 loadAllData();
 }
 async function addPatient() {
-const payload = {
+var payload = {
 full_name: document.getElementById('patName').value,
 phone: document.getElementById('patPhone').value,
 age_gender: document.getElementById('patAge').value,
 diagnosis: document.getElementById('patDiag').value,
 prescription: document.getElementById('patPresc').value
 };
-const res = await fetch('/api/patients', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-if (!res.ok) { const e = await res.json(); alert(e.detail); return; }
+var res = await fetch('/api/patients', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+if (!res.ok) { var e = await res.json(); alert(e.detail); return; }
 document.getElementById('patName').value = '';
 document.getElementById('patDiag').value = '';
 document.getElementById('patPresc').value = '';
 alert('✅ የታካሚው መዝገብ ተቀምጧል!');
 loadAllData();
 }
+document.getElementById('btnDoLogin').addEventListener('click', doPharmLogin);
+document.getElementById('pLoginPass').addEventListener('keydown', function(e) {
+if (e.key === 'Enter') { doPharmLogin(); }
+});
 window.addEventListener('DOMContentLoaded', function() {
 applySavedPharmacyName();
 if (sessionStorage.getItem('pharm_auth') === '1') {
