@@ -52,7 +52,7 @@
     <p style="color:#64748b;font-size:13px;margin-bottom:16px;">ወደ ሲስተሙ ለመግባት ይግቡ (admin / admin123)</p>
     <input id="uBox" type="text" value="admin">
     <input id="pBox" type="password" placeholder="admin123">
-    <button type="button" onclick="doLogin()">🔐 ግባ (Login)</button>
+    <button type="button" onclick="if(document.getElementById('uBox').value.trim()==='admin'){if(document.getElementById('pBox').value.trim()==='admin123'){sessionStorage.setItem('pharm_ok','1');document.getElementById('loginGate').style.display='none';if(typeof loadAll==='function')loadAll();}else{alert('የተሳሳተ የይለፍ ቃል!');}}else{alert('የተሳሳተ የተጠቃሚ ስም!');}">🔐 ግባ (Login)</button>
     <div id="loginErr" style="color:#dc2626;font-size:13px;font-weight:bold;margin-top:10px;"></div>
   </div>
 </div>
@@ -292,6 +292,7 @@ applyBrand();
 if (sessionStorage.getItem('pharm_ok') === '1') { document.getElementById('loginGate').style.display = 'none'; }
 loadAll();
 };
+
 
 
 
