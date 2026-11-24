@@ -17,6 +17,32 @@
   * { box-sizing: border-box; font-family: "Segoe UI", system-ui, sans-serif; }
   body { margin: 0; background: var(--bg); color: #1e293b; }
 
+  #pharmLoginOverlay {
+    position: fixed; inset: 0;
+    background: linear-gradient(135deg, #0f172a, #0369a1);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 99999; padding: 16px;
+  }
+  .login-card {
+    background: #ffffff; width: 100%; max-width: 390px;
+    padding: 28px; border-radius: 14px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+    text-align: center;
+  }
+  .login-card h2 { margin: 0 0 6px 0; color: #0f172a; font-size: 22px; }
+  .login-card p { margin: 0 0 18px 0; color: #64748b; font-size: 13.5px; }
+  .login-field { text-align: left; margin-bottom: 12px; }
+  .login-field label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 4px; color: #334155; }
+  .login-field input {
+    width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1;
+    border-radius: 8px; font-size: 14px; outline: none;
+  }
+  .login-submit {
+    width: 100%; background: #0284c7; color: #ffffff; border: none;
+    padding: 11px; border-radius: 8px; font-size: 15px; font-weight: 700;
+    cursor: pointer; margin-top: 6px;
+  }
+
   .top-nav {
     display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
     gap: 10px; background: linear-gradient(135deg, #0f172a, #1e293b);
@@ -28,12 +54,13 @@
   .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
   .tab-btn {
     background: rgba(255,255,255,0.08); color: #e2e8f0;
-    border: 1px solid rgba(56,189,248,0.3); padding: 9px 15px;
+    border: 1px solid rgba(56,189,248,0.3); padding: 9px 14px;
     border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer;
     transition: all 0.2s;
   }
   .tab-btn:hover { background: rgba(2,132,199,0.35); }
   .tab-btn.active { background: var(--primary); color: #fff; border-color: #38bdf8; box-shadow: 0 2px 8px rgba(2,132,199,0.45); }
+  .logout-pill { background: #dc2626 !important; color: #ffffff !important; border-color: #ef4444 !important; }
 
   .container { max-width: 1260px; margin: 18px auto; padding: 0 16px; }
 
@@ -88,38 +115,6 @@
 </style>
 </head>
 <body>
-<style id="pharm-login-style">
-  #pharmLoginOverlay {
-    position: fixed; inset: 0;
-    background: linear-gradient(135deg, #0f172a, #0369a1);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 99999; padding: 16px;
-  }
-  .login-card {
-    background: #ffffff; width: 100%; max-width: 390px;
-    padding: 28px; border-radius: 14px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
-    text-align: center;
-  }
-  .login-card h2 { margin: 0 0 6px 0; color: #0f172a; font-size: 22px; }
-  .login-card p { margin: 0 0 18px 0; color: #64748b; font-size: 13.5px; }
-  .login-field { text-align: left; margin-bottom: 12px; }
-  .login-field label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 4px; color: #334155; }
-  .login-field input {
-    width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1;
-    border-radius: 8px; font-size: 14px; outline: none;
-  }
-  .login-field input:focus { border-color: #0284c7; }
-  .login-submit {
-    width: 100%; background: #0284c7; color: #ffffff; border: none;
-    padding: 11px; border-radius: 8px; font-size: 15px; font-weight: 700;
-    cursor: pointer; margin-top: 6px;
-  }
-  .logout-pill {
-    background: #dc2626 !important; color: #ffffff !important;
-    border-color: #ef4444 !important;
-  }
-</style>
 
 <div id="pharmLoginOverlay">
   <div class="login-card">
@@ -139,75 +134,15 @@
   </div>
 </div>
 
-<script id="pharm-login-script">
-function applySavedPharmacyName() {
-  const savedName = localStorage.getItem('pharmacy_brand_name');
-  if (savedName) {
-    const brandEl = document.querySelector('.brand');
-    if (brandEl) brandEl.innerHTML = '💊 ' + savedName + ' <span>ዘመናዊ የፋርማሲና ክሊኒክ አስተዳደር ሲስተም</span>';
-    const loginTitle = document.getElementById('loginBrandTitle');
-    if (loginTitle) loginTitle.innerText = savedName;
-    const recTitle = document.querySelector('#receiptModal h3');
-    if (recTitle) recTitle.innerText = savedName;
-  }
-}
-
-function doPharmLogin() {
-  const u = (document.getElementById('pLoginUser').value || '').trim();
-  const p = (document.getElementById('pLoginPass').value || '').trim();
-  const validPass = localStorage.getItem('pharmacy_admin_pass') || 'admin123';
-  if (u === 'admin' && p === validPass) {
-    sessionStorage.setItem('pharm_auth', '1');
-    document.getElementById('pharmLoginOverlay').style.display = 'none';
-  } else {
-    document.getElementById('pLoginErr').innerText = '⚠️ የተሳሳተ የተጠቃሚ ስም ወይም የይለፍ ቃል!';
-  }
-}
-
-function doPharmLogout() {
-  sessionStorage.removeItem('pharm_auth');
-  document.getElementById('pLoginPass').value = '';
-  document.getElementById('pharmLoginOverlay').style.display = 'flex';
-}
-
-window.addEventListener('DOMContentLoaded', function() {
-  applySavedPharmacyName();
-  if (sessionStorage.getItem('pharm_auth') === '1') {
-    document.getElementById('pharmLoginOverlay').style.display = 'none';
-  }
-  const navTabs = document.querySelector('.nav-tabs');
-  if (navTabs && !document.getElementById('btnPharmLogout')) {
-    const setBtn = document.createElement('button');
-    setBtn.className = 'tab-btn';
-    setBtn.innerText = '⚙️ የፋርማሲ ስም ቀይር';
-    setBtn.onclick = function() {
-      const cur = localStorage.getItem('pharmacy_brand_name') || 'TanaCloud Pharmacy & Clinic';
-      const nextName = prompt('የፋርማሲው ወይም የክሊኒኩን አዲስ ስም ያስገቡ፦', cur);
-      if (nextName && nextName.trim()) {
-        localStorage.setItem('pharmacy_brand_name', nextName.trim());
-        applySavedPharmacyName();
-        alert('✅ ስሙ ወደ "' + nextName.trim() + '" ተቀይሯል!');
-      }
-    };
-    navTabs.appendChild(setBtn);
-
-    const outBtn = document.createElement('button');
-    outBtn.id = 'btnPharmLogout';
-    outBtn.className = 'tab-btn logout-pill';
-    outBtn.innerText = '🚪 ውጣ';
-    outBtn.onclick = doPharmLogout;
-    navTabs.appendChild(outBtn);
-  }
-});
-</script>
-
 <div class="top-nav">
-  <div class="brand">💊 TanaCloud Pharmacy & Clinic <span>ዘመናዊ የፋርማሲና ክሊኒክ አስተዳደር ሲስተም</span></div>
+  <div class="brand" id="mainBrandHeader">💊 TanaCloud Pharmacy & Clinic <span>ዘመናዊ የፋርማሲና ክሊኒክ አስተዳደር ሲስተም</span></div>
   <div class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('pos', this)">🛒 ፈጣን ሽያጭ (POS)</button>
-    <button class="tab-btn" onclick="switchTab('inventory', this)">💊 መድኃኒት ክምችት & Expiry</button>
-    <button class="tab-btn" onclick="switchTab('clinic', this)">🩺 የክሊኒክ ታካሚዎች</button>
-    <button class="tab-btn" onclick="switchTab('sales', this)">📈 የሽያጭ እና ትርፍ ታሪክ</button>
+    <button type="button" class="tab-btn active" onclick="switchTab('pos', this)">🛒 ፈጣን ሽያጭ (POS)</button>
+    <button type="button" class="tab-btn" onclick="switchTab('inventory', this)">💊 መድኃኒት ክምችት & Expiry</button>
+    <button type="button" class="tab-btn" onclick="switchTab('clinic', this)">🩺 የክሊኒክ ታካሚዎች</button>
+    <button type="button" class="tab-btn" onclick="switchTab('sales', this)">📈 የሽያጭ እና ትርፍ ታሪክ</button>
+    <button type="button" class="tab-btn" onclick="changeBrandName()">⚙️ የፋርማሲ ስም ቀይር</button>
+    <button type="button" class="tab-btn logout-pill" onclick="doPharmLogout()">🚪 ውጣ</button>
   </div>
 </div>
 
@@ -231,6 +166,7 @@ window.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 
+  <!-- 1. POS -->
   <div id="tab-pos" class="section-panel active">
     <div class="card">
       <h3>🛒 ፈጣን የመድኃኒት መሸጫ (Point of Sale & Receipt)</h3>
@@ -258,7 +194,7 @@ window.addEventListener('DOMContentLoaded', function() {
       </div>
       <div style="margin-top:14px; display:flex; align-items:center; justify-content:space-between; background:#eff6ff; padding:12px 16px; border-radius:8px;">
         <div style="font-size:15px; font-weight:700; color:#0369a1;">ጠቅላላ ሂሳብ፦ <span id="salePreviewTotal" style="font-size:20px; color:#0f172a;">0 ETB</span></div>
-        <button class="btn btn-success" onclick="submitSale()">✅ ሽያጩን አጽድቅ እና ደረሰኝ አውጣ</button>
+        <button type="button" class="btn btn-success" onclick="submitSale()">✅ ሽያጩን አጽድቅ እና ደረሰኝ አውጣ</button>
       </div>
     </div>
 
@@ -271,46 +207,37 @@ window.addEventListener('DOMContentLoaded', function() {
     </div>
   </div>
 
+  <!-- 2. Inventory -->
   <div id="tab-inventory" class="section-panel">
     <div class="card">
       <h3>➕ አዲስ መድኃኒት መመዝገቢያ</h3>
-      <div class="form-grid">
-        <div class="form-group"><label>የመድኃኒት ስም</label><input type="text" id="medName" placeholder="ለምሳሌ፡ Azithromycin 500mg"></div>
-        <div class="form-group"><label>ምድብ (Category)</label>
-          <select id="medCat">
-            <option value="Antibiotic">Antibiotic</option>
-            <option value="Painkiller">Painkiller</option>
-            <option value="Antimalarial">Antimalarial</option>
-            <option value="Syrup">Syrup</option>
-            <option value="Injection">Injection</option>
-            <option value="General">General</option>
-          </select>
-        </div>
-        <div class="form-group"><label>የመግዣ ዋጋ (ETB)</label><input type="number" id="medBuy" placeholder="150"></div>
-        <div class="form-group"><label>የመሸጫ ዋጋ (ETB)</label><input type="number" id="medSell" placeholder="220"></div>
-        <div class="form-group"><label>ብዛት (Stock)</label><input type="number" id="medStock" placeholder="50"></div>
-        <div class="form-group"><label>ጊዜው የሚያልፍበት ቀን (Expiry Date)</label><input type="date" id="medExpiry" value="2027-12-30"></div>
-      </div>
-      <button class="btn" style="margin-top:12px;" onclick="addMedicine()">💾 መድኃኒቱን መዝግብ</button>
-    </div>
 
-    <div class="card">
-      <h3>💊 የመድኃኒቶች ሙሉ ክምችት ዝርዝር</h3>
-      <input type="text" class="search-bar" placeholder="🔍 መድኃኒት ይፈልጉ (በስም ወይም በምድብ)..." oninput="filterTable('medTableBody', this.value)">
-      <table>
-        <thead><tr><th>መድኃኒት</th><th>ምድብ</th><th>መግዣ</th><th>መሸጫ</th><th>ክምችት</th><th>Expiry Date</th><th>ሁኔታ</th><th>ድርጊት</th></tr></thead>
-        <tbody id="medTableBody"></tbody>
-      </table>
-    </div>
-  </div>
+የመድኃኒት ስም
+ምድብ (Category)
 
-  <div id="tab-clinic" class="section-panel">
-    <div class="card">
-      <h3>🩺 የታካሚ ምርመራ እና የሐኪም ማዘዣ መመዝገቢያ</h3>
-      <div class="form-grid">
-        <div class="form-group"><label>የታካሚው ሙሉ ስም</label><input type="text" id="patName" placeholder="ሰላምታ ታደሰ"></div>
-        <div class="form-group"><label>ስልክ ቁጥር</label><input type="text" id="patPhone" placeholder="0918..."></div>
-        <div class="form-group"><label>ዕድሜ እና ጾታ</label><input type="text" id="patAge" placeholder="28 / ሴት"></div>
+Antibiotic
+Painkiller
+Antimalarial
+Syrup
+Injection
+General
+
+
+የመግዣ ዋጋ (ETB)
+የመሸጫ ዋጋ (ETB)
+ብዛት (Stock)
+ጊዜው የሚያልፍበት ቀን (Expiry Date)
+
+💾 መድኃኒቱን መዝግብ
+💊 የመድኃኒቶች ሙሉ ክምችት ዝርዝር
+
+መድኃኒት    ምድብ    መግዣ    መሸጫ    ክምችት    Expiry Date    ሁኔታ    ድርጊት
+
+🩺 የታካሚ ምርመራ እና የሐኪም ማዘዣ መመዝገቢያ
+
+የታካሚው ሙሉ ስም
+ስልክ ቁጥር
+ዕድሜ እና ጾታ
 የምርመራ ውጤት (Diagnosis)
 የታዘዘ መድኃኒት (Prescription)
 
@@ -333,11 +260,45 @@ TanaCloud Pharmacy
 
 
 let allMedicines = [];
+function applySavedPharmacyName() {
+const savedName = localStorage.getItem('pharmacy_brand_name');
+if (savedName) {
+document.getElementById('mainBrandHeader').innerHTML = '💊 ' + savedName + ' ዘመናዊ የፋርማሲና ክሊኒክ አስተዳደር ሲስተም';
+document.getElementById('loginBrandTitle').innerText = savedName;
+document.getElementById('receiptBrandTitle').innerText = savedName;
+}
+}
+function changeBrandName() {
+const cur = localStorage.getItem('pharmacy_brand_name') || 'TanaCloud Pharmacy & Clinic';
+const nextName = prompt('የፋርማሲው ወይም የክሊኒኩን አዲስ ስም ያስገቡ፦', cur);
+if (nextName && nextName.trim()) {
+localStorage.setItem('pharmacy_brand_name', nextName.trim());
+applySavedPharmacyName();
+alert('✅ ስሙ ወደ "' + nextName.trim() + '" ተቀይሯል!');
+}
+}
+function doPharmLogin() {
+const u = (document.getElementById('pLoginUser').value || '').trim();
+const p = (document.getElementById('pLoginPass').value || '').trim();
+if (u === 'admin' && p === 'admin123') {
+sessionStorage.setItem('pharm_auth', '1');
+document.getElementById('pharmLoginOverlay').style.display = 'none';
+loadAllData();
+} else {
+document.getElementById('pLoginErr').innerText = '⚠️ የተሳሳተ የተጠቃሚ ስም ወይም የይለፍ ቃል!';
+}
+}
+function doPharmLogout() {
+sessionStorage.removeItem('pharm_auth');
+document.getElementById('pLoginPass').value = '';
+document.getElementById('pharmLoginOverlay').style.display = 'flex';
+}
 function switchTab(name, btn) {
 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-btn.classList.add('active');
+if (btn) btn.classList.add('active');
 document.querySelectorAll('.section-panel').forEach(p => p.classList.remove('active'));
-document.getElementById('tab-' + name).classList.add('active');
+const target = document.getElementById('tab-' + name);
+if (target) target.classList.add('active');
 }
 function filterTable(tbodyId, query) {
 const q = query.toLowerCase().trim();
@@ -352,6 +313,7 @@ const diffDays = (exp - new Date()) / (1000 * 60 * 60 * 24);
 return diffDays <= 90;
 }
 async function loadAllData() {
+try {
 const [medRes, salesRes, patRes] = await Promise.all([
 fetch('/api/medicines'), fetch('/api/sales'), fetch('/api/patients')
 ]);
@@ -416,6 +378,9 @@ patBody.innerHTML = '';
 patients.forEach(p => {
 patBody.innerHTML += <tr><td>${p.visit_date}</td><td><strong>${p.full_name}</strong></td><td>${p.phone}</td><td>${p.age_gender}</td><td>${p.diagnosis}</td><td>${p.prescription}</td></tr>;
 });
+} catch (err) {
+console.error(err);
+}
 }
 function updateSalePreview() {
 const sel = document.getElementById('saleMedSelect');
@@ -488,7 +453,12 @@ document.getElementById('patPresc').value = '';
 alert('✅ የታካሚው መዝገብ ተቀምጧል!');
 loadAllData();
 }
-window.addEventListener('DOMContentLoaded', loadAllData);
-
+window.addEventListener('DOMContentLoaded', function() {
+applySavedPharmacyName();
+if (sessionStorage.getItem('pharm_auth') === '1') {
+document.getElementById('pharmLoginOverlay').style.display = 'none';
+}
+loadAllData();
+});
 
 
