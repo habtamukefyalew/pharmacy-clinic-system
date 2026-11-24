@@ -3,236 +3,295 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TanaCloud Pharmacy & Clinic Management System</title>
+<title>TanaCloud Pharmacy and Clinic</title>
 <style>
-  :root { --primary:#0284c7; --dark:#0f172a; --bg:#f1f5f9; --card:#ffffff; --danger:#dc2626; --success:#059669; }
-  * { box-sizing:border-box; font-family:"Segoe UI",system-ui,sans-serif; }
-  body { margin:0; background:var(--bg); color:#1e293b; }
-  #loginGate { position:fixed; inset:0; background:linear-gradient(135deg,#0f172a,#0369a1); display:flex; align-items:center; justify-content:center; z-index:99999; padding:16px; }
-  .login-card { background:#fff; width:100%; max-width:390px; padding:28px; border-radius:16px; box-shadow:0 20px 45px rgba(0,0,0,0.35); text-align:center; }
-  .login-card h2 { margin:6px 0; color:#0f172a; font-size:22px; }
-  .login-card input { width:100%; padding:11px 13px; margin-bottom:12px; border:1.5px solid #cbd5e1; border-radius:8px; font-size:14px; }
-  .login-card button { width:100%; padding:12px; background:#0284c7; color:#fff; border:none; border-radius:8px; font-weight:700; font-size:15px; cursor:pointer; }
-  .top-nav { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; background:linear-gradient(135deg,#0f172a,#1e293b); padding:13px 24px; position:sticky; top:0; z-index:1000; box-shadow:0 4px 14px rgba(0,0,0,0.2); }
-  .brand { color:#38bdf8; font-size:20px; font-weight:800; }
-  .brand span { color:#e2e8f0; font-weight:400; font-size:12.5px; display:block; }
-  .nav-tabs { display:flex; flex-wrap:wrap; gap:8px; }
-  .tab-btn { background:rgba(255,255,255,0.08); color:#f8fafc; border:1px solid rgba(56,189,248,0.35); padding:9px 15px; border-radius:8px; font-size:13.5px; font-weight:600; cursor:pointer; transition:all 0.2s; }
-  .tab-btn:hover { background:rgba(2,132,199,0.35); }
-  .tab-btn.active { background:#0284c7; color:#fff; border-color:#38bdf8; box-shadow:0 2px 10px rgba(2,132,199,0.5); }
-  .logout-pill { background:#dc2626 !important; border-color:#ef4444 !important; }
-  .container { max-width:1260px; margin:20px auto; padding:0 16px; }
-  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:15px; margin-bottom:20px; }
-  .kpi-card { background:#fff; padding:18px 20px; border-radius:12px; border-left:5px solid #0284c7; box-shadow:0 2px 10px rgba(0,0,0,0.05); }
-  .kpi-card.warn { border-left-color:#dc2626; }
-  .kpi-card.profit { border-left-color:#059669; }
-  .kpi-title { font-size:13px; color:#64748b; font-weight:600; }
-  .kpi-val { font-size:25px; font-weight:800; color:#0f172a; margin-top:5px; }
-  .card { background:#fff; padding:22px; border-radius:12px; margin-bottom:18px; box-shadow:0 2px 12px rgba(0,0,0,0.06); }
-  .card h3 { margin:0 0 15px 0; color:#0f172a; font-size:17.5px; border-bottom:1.5px solid #e2e8f0; padding-bottom:9px; }
-  .form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(205px,1fr)); gap:13px; }
-  .form-group label { display:block; font-size:12.5px; font-weight:700; margin-bottom:5px; color:#334155; }
-  .form-group input,.form-group select { width:100%; padding:10px 12px; border:1.5px solid #cbd5e1; border-radius:8px; font-size:14px; outline:none; }
-  .form-group input:focus,.form-group select:focus { border-color:#0284c7; }
-  .btn { background:#0284c7; color:#fff; border:none; padding:10px 18px; border-radius:8px; font-weight:700; cursor:pointer; font-size:14px; }
-  .btn-success { background:#059669; }
-  .btn-danger { background:#dc2626; padding:6px 11px; font-size:12.5px; }
-  .btn-sm { padding:6px 11px; font-size:12.5px; }
-  .search-bar { width:100%; padding:10px 14px; border:1.5px solid #94a3b8; border-radius:8px; font-size:14px; margin-bottom:12px; }
-  table { width:100%; border-collapse:collapse; font-size:13.5px; }
-  th { background:#0f172a; color:#fff; padding:11px; text-align:left; }
-  td { padding:10px 11px; border-bottom:1px solid #e2e8f0; }
-  tr:hover { background:#f8fafc; }
-  .badge { padding:4px 10px; border-radius:12px; font-size:11.5px; font-weight:700; display:inline-block; }
-  .badge-ok { background:#dcfce7; color:#166534; }
-  .badge-low { background:#fee2e2; color:#991b1b; }
-  .badge-exp { background:#fef3c7; color:#92400e; }
-  #receiptModal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); align-items:center; justify-content:center; z-index:2000; }
-  .receipt-box { background:#fff; width:360px; padding:24px; border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,0.28); }
-  @media print { body * { visibility:hidden; } #receiptModal,#receiptModal * { visibility:visible; } #receiptModal { position:absolute; left:0; top:0; background:none; } .no-print { display:none !important; } }
+  * { box-sizing: border-box; font-family: "Segoe UI", system-ui, sans-serif; }
+  body { margin: 0; background: #f1f5f9; color: #1e293b; }
+  #loginGate { position: fixed; inset: 0; background: linear-gradient(135deg, #0f172a, #0369a1); display: flex; align-items: center; justify-content: center; z-index: 99999; padding: 16px; }
+  .login-card { background: #fff; width: 100%; max-width: 380px; padding: 28px; border-radius: 16px; box-shadow: 0 20px 45px rgba(0,0,0,0.35); text-align: center; }
+  .login-card input { width: 100%; padding: 11px; margin-bottom: 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; }
+  .login-card button { width: 100%; padding: 12px; background: #0284c7; color: #fff; border: none; border-radius: 8px; font-weight: 700; font-size: 15px; cursor: pointer; }
+  .top-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; background: #0f172a; padding: 13px 24px; position: sticky; top: 0; z-index: 1000; }
+  .brand { color: #38bdf8; font-size: 20px; font-weight: 800; }
+  .brand span { color: #e2e8f0; font-weight: 400; font-size: 12.5px; display: block; }
+  .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tab-btn { background: rgba(255,255,255,0.1); color: #f8fafc; border: 1px solid rgba(56,189,248,0.35); padding: 9px 14px; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+  .tab-btn.active { background: #0284c7; border-color: #38bdf8; }
+  .logout-pill { background: #dc2626 !important; border-color: #ef4444 !important; }
+  .container { max-width: 1250px; margin: 20px auto; padding: 0 16px; }
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
+  .kpi-card { background: #fff; padding: 18px 20px; border-radius: 12px; border-left: 5px solid #0284c7; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+  .kpi-val { font-size: 24px; font-weight: 800; margin-top: 5px; }
+  .card { background: #fff; padding: 22px; border-radius: 12px; margin-bottom: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .card h3 { margin: 0 0 15px 0; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 9px; }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 13px; }
+  .form-group label { display: block; font-size: 12.5px; font-weight: 700; margin-bottom: 5px; }
+  .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 14px; }
+  .btn { background: #0284c7; color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; }
+  .btn-success { background: #059669; }
+  .btn-danger { background: #dc2626; padding: 6px 11px; font-size: 12.5px; }
+  .btn-sm { padding: 6px 11px; font-size: 12.5px; }
+  .search-bar { width: 100%; padding: 10px 14px; border: 1.5px solid #94a3b8; border-radius: 8px; font-size: 14px; margin-bottom: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { background: #0f172a; color: #fff; padding: 11px; text-align: left; }
+  td { padding: 10px 11px; border-bottom: 1px solid #e2e8f0; }
+  .badge { padding: 4px 10px; border-radius: 12px; font-size: 11.5px; font-weight: 700; }
+  .badge-ok { background: #dcfce7; color: #166534; }
+  .badge-low { background: #fee2e2; color: #991b1b; }
+  #receiptModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); align-items: center; justify-content: center; z-index: 2000; }
+  .receipt-box { background: #fff; width: 360px; padding: 24px; border-radius: 12px; }
+  @media print { body * { visibility: hidden; } #receiptModal, #receiptModal * { visibility: visible; } #receiptModal { position: absolute; left: 0; top: 0; background: none; } .no-print { display: none !important; } }
 </style>
-<script>
+</head>
+<body>
+
+<div id="loginGate">
+  <div class="login-card">
+    <div style="font-size:40px;">💊</div>
+    <h2 id="loginTitle" style="margin:6px 0;">TanaCloud Pharmacy and Clinic</h2>
+    <p style="color:#64748b;font-size:13px;margin-bottom:16px;">ወደ ሲስተሙ ለመግባት ይግቡ (admin / admin123)</p>
+    <input id="uBox" type="text" value="admin">
+    <input id="pBox" type="password" placeholder="admin123">
+    <button type="button" onclick="doLogin()">🔐 ግባ (Login)</button>
+    <div id="loginErr" style="color:#dc2626;font-size:13px;font-weight:bold;margin-top:10px;"></div>
+  </div>
+</div>
+
+<div class="top-nav">
+  <div class="brand" id="brandHeader">💊 TanaCloud Pharmacy and Clinic <span>ዘመናዊ የፋርማሲና ክሊኒክ አስተዳደር ሲስተም</span></div>
+  <div class="nav-tabs">
+    <button type="button" class="tab-btn active" onclick="switchPanel('secPos', this)">🛒 ፈጣን ሽያጭ (POS)</button>
+    <button type="button" class="tab-btn" onclick="switchPanel('secInv', this)">💊 መድኃኒት ክምችት and Expiry</button>
+    <button type="button" class="tab-btn" onclick="switchPanel('secCli', this)">🩺 የክሊኒክ ታካሚዎች</button>
+    <button type="button" class="tab-btn" onclick="switchPanel('secSal', this)">📈 የሽያጭ እና ትርፍ ታሪክ</button>
+    <button type="button" class="tab-btn" onclick="renameBrand()">⚙️ የፋርማሲ ስም ቀይር</button>
+    <button type="button" class="tab-btn logout-pill" onclick="doLogout()">🚪 ውጣ</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="kpi-grid">
+    <div class="kpi-card"><div>💊 ጠቅላላ የመድኃኒት ዓይነቶች</div><div class="kpi-val" id="kpiMeds">0</div></div>
+    <div class="kpi-card" style="border-left-color:#dc2626;"><div>⚠️ ማስጠንቀቂያ (Low Stock / Expiry)</div><div class="kpi-val" id="kpiAlerts" style="color:#dc2626;">0</div></div>
+    <div class="kpi-card"><div>💰 ጠቅላላ ሽያጭ (Total Sales)</div><div class="kpi-val" id="kpiSales">0 ETB</div></div>
+    <div class="kpi-card" style="border-left-color:#059669;"><div>📈 የተጣራ ትርፍ (Net Profit)</div><div class="kpi-val" id="kpiProfit" style="color:#059669;">0 ETB</div></div>
+  </div>
+
+  <div id="secPos" class="sec-panel" style="display:block;">
+    <div class="card">
+      <h3>🛒 ፈጣን የመድኃኒት መሸጫ (Point of Sale and Receipt)</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>መድኃኒት ይምረጡ</label><select id="saleMedSelect" onchange="updatePreview()"></select></div>
+        <div class="form-group"><label>ብዛት (Quantity)</label><input type="number" id="saleQty" value="1" min="1" oninput="updatePreview()"></div>
+        <div class="form-group"><label>የደንበኛ / ታካሚ ስም</label><input type="text" id="saleCustomer" placeholder="Walk-in Customer"></div>
+        <div class="form-group"><label>የክፍያ መንገድ</label><select id="salePayMethod"><option value="Cash">ጥሬ ገንዘብ (Cash)</option><option value="Telebirr">ቴሌብር (Telebirr)</option><option value="Bank">ሞባይል ባንኪንግ / ባንክ</option></select></div>
+      </div>
+      <div style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;background:#eff6ff;padding:12px 16px;border-radius:8px;">
+        <div style="font-size:15px;font-weight:700;color:#0369a1;">ጠቅላላ ሂሳብ፦ <span id="salePreviewTotal" style="font-size:20px;color:#0f172a;">0 ETB</span></div>
+        <button type="button" class="btn btn-success" onclick="submitSale()">✅ ሽያጩን አጽድቅ እና ደረሰኝ አውጣ</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>⚠️ አስቸኳይ ትኩረት የሚፈልጉ መድኃኒቶች</h3>
+      <table><thead><tr><th>የመድኃኒት ስም</th><th>ምድብ</th><th>ቀሪ ክምችት</th><th>Expiry Date</th><th>ሁኔታ</th></tr></thead><tbody id="alertTableBody"></tbody></table>
+    </div>
+  </div>
+
+  <div id="secInv" class="sec-panel" style="display:none;">
+    <div class="card">
+      <h3>➕ አዲስ መድኃኒት መመዝገቢያ</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>የመድኃኒት ስም</label><input type="text" id="medName" placeholder="ለምሳሌ፡ Azithromycin 500mg"></div>
+        <div class="form-group"><label>ምድብ</label><select id="medCat"><option value="Antibiotic">Antibiotic</option><option value="Painkiller">Painkiller</option><option value="Antimalarial">Antimalarial</option><option value="Syrup">Syrup</option><option value="Injection">Injection</option><option value="General">General</option></select></div>
+        <div class="form-group"><label>የመግዣ ዋጋ (ETB)</label><input type="number" id="medBuy" placeholder="150"></div>
+        <div class="form-group"><label>የመሸጫ ዋጋ (ETB)</label><input type="number" id="medSell" placeholder="220"></div>
+        <div class="form-group"><label>ብዛት (Stock)</label><input type="number" id="medStock" placeholder="50"></div>
+        <div class="form-group"><label>Expiry Date</label><input type="date" id="medExpiry" value="2027-12-30"></div>
+      </div>
+      <button type="button" class="btn" style="margin-top:12px;" onclick="addMedicine()">💾 መድኃኒቱን መዝግብ</button>
+    </div>
+    <div class="card">
+      <h3>💊 የመድኃኒቶች ሙሉ ክምችት ዝርዝር</h3>
+      <input type="text" class="search-bar" oninput="filterRows(this, 'medTableBody')" placeholder="🔍 መድኃኒት ይፈልጉ...">
+      <table><thead><tr><th>መድኃኒት</th><th>ምድብ</th><th>መግዣ</th><th>መሸጫ</th><th>ክምችት</th><th>Expiry Date</th><th>ሁኔታ</th><th>ድርጊት</th></tr></thead><tbody id="medTableBody"></tbody></table>
+    </div>
+  </div>
+
+  <div id="secCli" class="sec-panel" style="display:none;">
+    <div class="card">
+      <h3>🩺 የታካሚ ምርመራ እና የሐኪም ማዘዣ መመዝገቢያ</h3>
+      <div class="form-grid">
+        <div class="form-group"><label>የታካሚው ሙሉ ስም</label><input type="text" id="patName" placeholder="ሰላምታ ታደሰ"></div>
+        <div class="form-group"><label>ስልክ ቁጥር</label><input type="text" id="patPhone" placeholder="0918..."></div>
+        <div class="form-group"><label>ዕድሜ እና ጾታ</label><input type="text" id="patAge" placeholder="28 / ሴት"></div>
+        <div class="form-group"><label>ምርመራ (Diagnosis)</label><input type="text" id="patDiag" placeholder="Typhoid / Acute Tonsillitis"></div>
+የታዘዘ መድኃኒት (Prescription)
+
+📋 የታካሚውን መዝገብ አስቀምጥ
+
+
+📋 የታካሚዎች መዝገብ ዝርዝር
+
+ቀን    የታካሚ ስም    ስልክ    ዕድሜ/ጾታ    ምርመራ    የታዘዘ መድኃኒት
+
+📈 የዕለት ሽያጭ እና የተጣራ ትርፍ ሪፖርት
+
+ሰዓት    ደንበኛ    መድኃኒት    ብዛት    ጠቅላላ ሽያጭ    የተጣራ ትርፍ    ክፍያ
+
+TanaCloud Pharmacy
+የሽያጭ ደረሰኝ (Official Sales Receipt)
+
+
+
+🖨️ አትም
+ዝጋ
+
+
 function switchPanel(panelId, btn) {
-  var list = document.querySelectorAll(".sec-panel");
-  for (var i = 0; i < list.length; i++) { list[i].style.display = "none"; }
-  var btns = document.querySelectorAll(".tab-btn");
-  for (var j = 0; j < btns.length; j++) { btns[j].classList.remove("active"); }
-  var target = document.getElementById(panelId);
-  if (target) { target.style.display = "block"; }
-  if (btn) { btn.classList.add("active"); }
+var list = document.querySelectorAll('.sec-panel');
+for (var i = 0; i < list.length; i++) { list[i].style.display = 'none'; }
+var btns = document.querySelectorAll('.tab-btn');
+for (var j = 0; j < btns.length; j++) { btns[j].classList.remove('active'); }
+var target = document.getElementById(panelId);
+if (target) { target.style.display = 'block'; }
+if (btn) { btn.classList.add('active'); }
 }
 function doLogin() {
-  var u = document.getElementById("uBox").value.trim();
-  var p = document.getElementById("pBox").value.trim();
-  if (u === "admin") {
-    if (p === "admin123") {
-      sessionStorage.setItem("pharm_ok", "1");
-      document.getElementById("loginGate").style.display = "none";
-      loadAll();
-      return;
-    }
-  }
-  document.getElementById("loginErr").innerText = "⚠️ የተሳሳተ የተጠቃሚ ስም ወይም የይለፍ ቃል!";
+var u = document.getElementById('uBox').value.trim();
+var p = document.getElementById('pBox').value.trim();
+if (u === 'admin') {
+if (p === 'admin123') {
+sessionStorage.setItem('pharm_ok', '1');
+document.getElementById('loginGate').style.display = 'none';
+loadAll();
+return;
+}
+}
+document.getElementById('loginErr').innerText = '⚠️ የተሳሳተ የተጠቃሚ ስም ወይም የይለፍ ቃል!';
 }
 function doLogout() {
-  sessionStorage.removeItem("pharm_ok");
-  document.getElementById("pBox").value = "";
-  document.getElementById("loginGate").style.display = "flex";
+sessionStorage.removeItem('pharm_ok');
+document.getElementById('pBox').value = '';
+document.getElementById('loginGate').style.display = 'flex';
 }
 function renameBrand() {
-  var cur = localStorage.getItem("pharm_name") || "TanaCloud Pharmacy & Clinic";
-  var next = prompt("አዲሱን የፋርማሲ ወይም የክሊኒክ ስም ያስገቡ፦", cur);
-  if (next) {
-    if (next.trim().length > 0) {
-      localStorage.setItem("pharm_name", next.trim());
-      applyBrand();
-      alert("✅ ስሙ ተቀይሯል!");
-    }
-  }
+var cur = localStorage.getItem('pharm_name') || 'TanaCloud Pharmacy and Clinic';
+var next = prompt('አዲሱን የፋርማሲ ወይም የክሊኒክ ስም ያስገቡ፦', cur);
+if (next) {
+if (next.trim().length > 0) {
+localStorage.setItem('pharm_name', next.trim());
+applyBrand();
+alert('✅ ስሙ ተቀይሯል!');
+}
+}
 }
 function applyBrand() {
-  var name = localStorage.getItem("pharm_name");
-  if (name) {
-    document.getElementById("brandHeader").innerHTML = "💊 " + name + " <span>ዘመናዊ የፋርማሲና ክሊኒክ አስተዳደር ሲስተም</span>";
-    document.getElementById("loginTitle").innerText = name;
-    document.getElementById("receiptTitle").innerText = name;
-  }
+var name = localStorage.getItem('pharm_name');
+if (name) {
+document.getElementById('brandHeader').innerHTML = '💊 ' + name + ' ዘመናዊ የፋርማሲና ክሊኒክ አስተዳደር ሲስተም';
+document.getElementById('loginTitle').innerText = name;
+document.getElementById('receiptTitle').innerText = name;
+}
 }
 function filterRows(inp, tbodyId) {
-  var q = inp.value.toLowerCase().trim();
-  var rows = document.querySelectorAll("#" + tbodyId + " tr");
-  for (var i = 0; i < rows.length; i++) {
-    var ok = !q ? true : (rows[i].innerText.toLowerCase().indexOf(q) !== -1);
-    rows[i].style.display = ok ? "" : "none";
-  }
+var q = inp.value.toLowerCase().trim();
+var rows = document.querySelectorAll('#' + tbodyId + ' tr');
+for (var i = 0; i < rows.length; i++) {
+var ok = !q ? true : (rows[i].innerText.toLowerCase().indexOf(q) !== -1);
+rows[i].style.display = ok ? '' : 'none';
+}
 }
 function updatePreview() {
-  var sel = document.getElementById("saleMedSelect");
-  if (!sel || sel.selectedIndex < 0) return;
-  var opt = sel.options[sel.selectedIndex];
-  var price = opt ? parseFloat(opt.getAttribute("data-price") || "0") : 0;
-  var qty = parseInt(document.getElementById("saleQty").value || "1");
-  document.getElementById("salePreviewTotal").innerText = (price * qty).toLocaleString() + " ETB";
+var sel = document.getElementById('saleMedSelect');
+if (!sel || sel.selectedIndex < 0) return;
+var opt = sel.options[sel.selectedIndex];
+var price = opt ? parseFloat(opt.getAttribute('data-price') || '0') : 0;
+var qty = parseInt(document.getElementById('saleQty').value || '1');
+document.getElementById('salePreviewTotal').innerText = (price * qty).toLocaleString() + ' ETB';
 }
 async function loadAll() {
-  try {
-    var r1 = await fetch("/api/medicines");
-    var r2 = await fetch("/api/sales");
-    var r3 = await fetch("/api/patients");
-    var meds = await r1.json();
-    var sales = await r2.json();
-    var pats = await r3.json();
-    document.getElementById("kpiMeds").innerText = meds.length;
-    var alerts = 0;
-    var medBody = document.getElementById("medTableBody");
-    var alertBody = document.getElementById("alertTableBody");
-    var sel = document.getElementById("saleMedSelect");
-    medBody.innerHTML = ""; alertBody.innerHTML = ""; sel.innerHTML = "";
-    for (var i = 0; i < meds.length; i++) {
-      var m = meds[i];
-      var low = m.stock <= 10;
-      var exp = m.expiry_date ? ((new Date(m.expiry_date) - new Date()) / 86400000 <= 90) : false;
-      if (low ? true : exp) alerts++;
-      var badge = "<span class=\"badge badge-ok\">✅ ጤናማ</span>";
-      if (low) badge = "<span class=\"badge badge-low\">⚠️ ክምችት አነስተኛ (Low)</span>";
-      else if (exp) badge = "<span class=\"badge badge-exp\">⏳ ጊዜው ሊያልፍ ተቃርቧል</span>";
-      medBody.innerHTML += "<tr><td><strong>" + m.name + "</strong></td><td>" + m.category + "</td><td>" + m.buy_price + " ETB</td><td><strong>" + m.sell_price + " ETB</strong></td><td><strong>" + m.stock + "</strong></td><td>" + m.expiry_date + "</td><td>" + badge + "</td><td><button type=\"button\" class=\"btn btn-sm\" onclick=\"restock(" + m.id + "," + m.stock + ")\">+ ክምችት</button> <button type=\"button\" class=\"btn btn-danger\" onclick=\"delMed(" + m.id + ")\">አጥፋ</button></td></tr>";
-      if (low ? true : exp) alertBody.innerHTML += "<tr><td><strong>" + m.name + "</strong></td><td>" + m.category + "</td><td><strong>" + m.stock + "</strong></td><td>" + m.expiry_date + "</td><td>" + badge + "</td></tr>";
-      sel.innerHTML += "<option value=\"" + m.id + "\" data-price=\"" + m.sell_price + "\">" + m.name + " — " + m.sell_price + " ETB (ቀሪ: " + m.stock + ")</option>";
-    }
-    if (!alertBody.innerHTML) alertBody.innerHTML = "<tr><td colspan=\"5\" style=\"text-align:center;color:#059669;\">✅ ሁሉም መድኃኒቶች በበቂ ክምችት ላይ ናቸው!</td></tr>";
-    document.getElementById("kpiAlerts").innerText = alerts;
-    updatePreview();
-    var tSales = 0, tProfit = 0;
-    var sBody = document.getElementById("salesTableBody");
-    sBody.innerHTML = "";
-    for (var j = 0; j < sales.length; j++) {
-      var s = sales[j];
-      tSales += s.total_price; tProfit += s.profit;
-      sBody.innerHTML += "" + s.sale_time + "" + s.customer_name + "" + s.medicine_name + "" + s.quantity + "" + s.total_price + " ETB<td style="color:#059669;font-weight:bold;">+" + s.profit + " ETB" + s.payment_method + "";
-    }
-    document.getElementById("kpiSales").innerText = tSales.toLocaleString() + " ETB";
-    document.getElementById("kpiProfit").innerText = tProfit.toLocaleString() + " ETB";
-    var pBody = document.getElementById("patientTableBody");
-    pBody.innerHTML = "";
-    for (var k = 0; k < pats.length; k++) {
-      var p = pats[k];
-      pBody.innerHTML += "" + p.visit_date + "" + p.full_name + "" + p.phone + "" + p.age_gender + "" + p.diagnosis + "" + p.prescription + "";
-    }
-  } catch (e) { console.error(e); }
+try {
+var r1 = await fetch('/api/medicines');
+var r2 = await fetch('/api/sales');
+var r3 = await fetch('/api/patients');
+var meds = await r1.json();
+var sales = await r2.json();
+var pats = await r3.json();
+document.getElementById('kpiMeds').innerText = meds.length;
+var alerts = 0;
+var medBody = document.getElementById('medTableBody');
+var alertBody = document.getElementById('alertTableBody');
+var sel = document.getElementById('saleMedSelect');
+medBody.innerHTML = ''; alertBody.innerHTML = ''; sel.innerHTML = '';
+for (var i = 0; i < meds.length; i++) {
+var m = meds[i];
+var low = m.stock <= 10;
+var exp = m.expiry_date ? ((new Date(m.expiry_date) - new Date()) / 86400000 <= 90) : false;
+if (low ? true : exp) alerts++;
+var badge = (low ? true : exp) ? '⚠️ ክምችት/Expiry' : '✅ ጤናማ';
+medBody.innerHTML += '' + m.name + '' + m.category + '' + m.buy_price + ' ETB' + m.sell_price + ' ETB' + m.stock + '' + m.expiry_date + '' + badge + '+ ክምችት አጥፋ';
+if (low ? true : exp) alertBody.innerHTML += '' + m.name + '' + m.category + '' + m.stock + '' + m.expiry_date + '' + badge + '';
+sel.innerHTML += '' + m.name + ' — ' + m.sell_price + ' ETB (ቀሪ: ' + m.stock + ')';
+}
+if (!alertBody.innerHTML) alertBody.innerHTML = '✅ ሁሉም መድኃኒቶች በበቂ ክምችት ላይ ናቸው!';
+document.getElementById('kpiAlerts').innerText = alerts;
+updatePreview();
+var tSales = 0, tProfit = 0;
+var sBody = document.getElementById('salesTableBody');
+sBody.innerHTML = '';
+for (var j = 0; j < sales.length; j++) {
+var s = sales[j];
+tSales += s.total_price; tProfit += s.profit;
+sBody.innerHTML += '' + s.sale_time + '' + s.customer_name + '' + s.medicine_name + '' + s.quantity + '' + s.total_price + ' ETB+' + s.profit + ' ETB' + s.payment_method + '';
+}
+document.getElementById('kpiSales').innerText = tSales.toLocaleString() + ' ETB';
+document.getElementById('kpiProfit').innerText = tProfit.toLocaleString() + ' ETB';
+var pBody = document.getElementById('patientTableBody');
+pBody.innerHTML = '';
+for (var k = 0; k < pats.length; k++) {
+var p = pats[k];
+pBody.innerHTML += '' + p.visit_date + '' + p.full_name + '' + p.phone + '' + p.age_gender + '' + p.diagnosis + '' + p.prescription + '';
+}
+} catch (e) { console.error(e); }
 }
 async function submitSale() {
-  var res = await fetch("/api/sales", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ medicine_id:document.getElementById("saleMedSelect").value, quantity:document.getElementById("saleQty").value, customer_name:document.getElementById("saleCustomer").value || "Walk-in Customer", payment_method:document.getElementById("salePayMethod").value }) });
-  if (!res.ok) { var e = await res.json(); alert(e.detail); return; }
-  var s = await res.json();
-  document.getElementById("receiptContent").innerHTML = "ደረሰኝ ቁጥር: #" + s.id + "ቀን/ሰዓት: " + s.sale_time + "ደንበኛ: " + s.customer_name + "መድኃኒት: " + s.medicine_name + "ብዛት: " + s.quantity + " x " + s.unit_price + " ETB<div style="font-size:16px;margin-top:6px;">ጠቅላላ ክፍያ: " + s.total_price + " ETBክፍያ መንገድ: " + s.payment_method + "";
-  document.getElementById("receiptModal").style.display = "flex";
-  loadAll();
+var res = await fetch('/api/sales', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ medicine_id: document.getElementById('saleMedSelect').value, quantity: document.getElementById('saleQty').value, customer_name: document.getElementById('saleCustomer').value || 'Walk-in Customer', payment_method: document.getElementById('salePayMethod').value }) });
+if (!res.ok) { var e = await res.json(); alert(e.detail); return; }
+var s = await res.json();
+document.getElementById('receiptContent').innerHTML = 'ደረሰኝ ቁጥር: #' + s.id + 'ቀን/ሰዓት: ' + s.sale_time + 'ደንበኛ: ' + s.customer_name + 'መድኃኒት: ' + s.medicine_name + 'ብዛት: ' + s.quantity + ' x ' + s.unit_price + ' ETBጠቅላላ ክፍያ: ' + s.total_price + ' ETBክፍያ መንገድ: ' + s.payment_method + '';
+document.getElementById('receiptModal').style.display = 'flex';
+loadAll();
 }
 async function addMedicine() {
-  var res = await fetch("/api/medicines", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ name:document.getElementById("medName").value, category:document.getElementById("medCat").value, buy_price:document.getElementById("medBuy").value, sell_price:document.getElementById("medSell").value, stock:document.getElementById("medStock").value, expiry_date:document.getElementById("medExpiry").value }) });
-  if (!res.ok) { var e = await res.json(); alert(e.detail); return; }
-  document.getElementById("medName").value = "";
-  alert("✅ መድኃኒቱ በተሳካ ሁኔታ ተመዝግቧል!");
-  loadAll();
+var res = await fetch('/api/medicines', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ name: document.getElementById('medName').value, category: document.getElementById('medCat').value, buy_price: document.getElementById('medBuy').value, sell_price: document.getElementById('medSell').value, stock: document.getElementById('medStock').value, expiry_date: document.getElementById('medExpiry').value }) });
+if (!res.ok) { var e = await res.json(); alert(e.detail); return; }
+document.getElementById('medName').value = '';
+alert('✅ መድኃኒቱ በተሳካ ሁኔታ ተመዝግቧል!');
+loadAll();
 }
 async function restock(id, cur) {
-  var add = prompt("ምን ያህል ተጨማሪ ብዛት (Stock) ይጨመር?", "20");
-  if (!add) return; if (isNaN(add)) return;
-  await fetch("/api/medicines/" + id, { method:"PUT", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ stock: cur + parseInt(add) }) });
-  loadAll();
+var add = prompt('ምን ያህል ተጨማሪ ብዛት (Stock) ይጨመር?', '20');
+if (!add) return; if (isNaN(add)) return;
+await fetch('/api/medicines/' + id, { method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ stock: cur + parseInt(add) }) });
+loadAll();
 }
 async function delMed(id) {
-  if (!confirm("ይህንን መድኃኒት ማጥፋት ይፈልጋሉ?")) return;
-  await fetch("/api/medicines/" + id, { method:"DELETE" });
-  loadAll();
+if (!confirm('ይህንን መድኃኒት ማጥፋት ይፈልጋሉ?')) return;
+await fetch('/api/medicines/' + id, { method: 'DELETE' });
+loadAll();
 }
 async function addPatient() {
-  var res = await fetch("/api/patients", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({ full_name:document.getElementById("patName").value, phone:document.getElementById("patPhone").value, age_gender:document.getElementById("patAge").value, diagnosis:document.getElementById("patDiag").value, prescription:document.getElementById("patPresc").value }) });
-  if (!res.ok) { var e = await res.json(); alert(e.detail); return; }
-  document.getElementById("patName").value = ""; document.getElementById("patDiag").value = ""; document.getElementById("patPresc").value = "";
-  alert("✅ የታካሚው መዝገብ ተቀምጧል!");
-  loadAll();
+var res = await fetch('/api/patients', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ full_name: document.getElementById('patName').value, phone: document.getElementById('patPhone').value, age_gender: document.getElementById('patAge').value, diagnosis: document.getElementById('patDiag').value, prescription: document.getElementById('patPresc').value }) });
+if (!res.ok) { var e = await res.json(); alert(e.detail); return; }
+document.getElementById('patName').value = ''; document.getElementById('patDiag').value = ''; document.getElementById('patPresc').value = '';
+alert('✅ የታካሚው መዝገብ ተቀምጧል!');
+loadAll();
 }
 window.onload = function() {
-  applyBrand();
-  if (sessionStorage.getItem("pharm_ok") === "1") { document.getElementById("loginGate").style.display = "none"; }
-  loadAll();
+applyBrand();
+if (sessionStorage.getItem('pharm_ok') === '1') { document.getElementById('loginGate').style.display = 'none'; }
+loadAll();
 };
 
 
-
-💊TanaCloud Pharmacy & Clinicወደ ሲስተሙ ለመግባት ይግቡ (admin / admin123)🔐 ግባ (Login)
-💊 TanaCloud Pharmacy & Clinic ዘመናዊ የፋርማሲና ክሊኒክ አስተዳደር ሲስተም
-🛒 ፈጣን ሽያጭ (POS)
-💊 መድኃኒት ክምችት & Expiry
-🩺 የክሊኒክ ታካሚዎች
-📈 የሽያጭ እና ትርፍ ታሪክ
-⚙️ የፋርማሲ ስም ቀይር
-🚪 ውጣ
-
-
-
-💊 ጠቅላላ የመድኃኒት ዓይነቶች0
-⚠️ ማስጠንቀቂያ (Low Stock / Expiry)0
-💰 ጠቅላላ ሽያጭ (Total Sales)0 ETB
-📈 የተጣራ ትርፍ (Net Profit)0 ETB
-
-
-🛒 ፈጣን የመድኃኒት መሸጫ (Point of Sale & Receipt)መድኃኒት ይምረጡብዛት (Quantity)የደንበኛ / ታካሚ ስምየክፍያ መንገድጥሬ ገንዘብ (Cash)ቴሌብር (Telebirr)ሞባይል ባንኪንግ / ባንክጠቅላላ ሂሳብ፦ 0 ETB✅ ሽያጩን አጽድቅ እና ደረሰኝ አውጣ
-⚠️ አስቸኳይ ትኩረት የሚፈልጉ መድኃኒቶች (Low Stock & Expiring Soon)የመድኃኒት ስምምድብቀሪ ክምችትExpiry Dateሁኔታ
-
-
-➕ አዲስ መድኃኒት መመዝገቢያየመድኃኒት ስምምድብAntibioticPainkillerAntimalarialSyrupInjectionGeneralየመግዣ ዋጋ (ETB)የመሸጫ ዋጋ (ETB)ብዛት (Stock)Expiry Date💾 መድኃኒቱን መዝግብ
-💊 የመድኃኒቶች ሙሉ ክምችት ዝርዝርመድኃኒትምድብመግዣመሸጫክምችትExpiry Dateሁኔታድርጊት
-
-
-🩺 የታካሚ ምርመራ እና የሐኪም ማዘዣ መመዝገቢያየታካሚው ሙሉ ስምስልክ ቁጥርዕድሜ እና ጾታምርመራ (Diagnosis)የታዘዘ መድኃኒት (Prescription)📋 የታካሚውን መዝገብ አስቀምጥ
-📋 የታካሚዎች መዝገብ ዝርዝርቀንየታካሚ ስምስልክዕድሜ/ጾታምርመራ (Diagnosis)የታዘዘ መድኃኒት
-
-
-📈 የዕለት ሽያጭ እና የተጣራ ትርፍ ሪፖርትሰዓትደንበኛመድኃኒትብዛትጠቅላላ ሽያጭየተጣራ ትርፍክፍያ
-
-
-TanaCloud Pharmacyየሽያጭ ደረሰኝ (Official Sales Receipt)🖨️ አትም (Print)ዝጋ
 
