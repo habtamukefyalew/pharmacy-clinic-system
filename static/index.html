@@ -118,35 +118,47 @@
   </div>
 
   <div id="secCli" class="sec-panel" style="display:none;">
-    <div class="card">
-      <h3>🩺 የታካሚ ምርመራ እና የሐኪም ማዘዣ መመዝገቢያ</h3>
-      <div class="form-grid">
-        <div class="form-group"><label>የታካሚው ሙሉ ስም</label><input type="text" id="patName" placeholder="ሰላምታ ታደሰ"></div>
-        <div class="form-group"><label>ስልክ ቁጥር</label><input type="text" id="patPhone" placeholder="0918..."></div>
-        <div class="form-group"><label>ዕድሜ እና ጾታ</label><input type="text" id="patAge" placeholder="28 / ሴት"></div>
-        <div class="form-group"><label>ምርመራ (Diagnosis)</label><input type="text" id="patDiag" placeholder="Typhoid / Acute Tonsillitis"></div>
-የታዘዘ መድኃኒት (Prescription)
+  <div class="card">
+    <h3>🩺 የታካሚ ምርመራ እና የሐኪም ማዘዣ መመዝገቢያ</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>የታካሚው ሙሉ ስም</label><input type="text" id="patName" placeholder="ሰላምታ ታደሰ"></div>
+      <div class="form-group"><label>ስልክ ቁጥር</label><input type="text" id="patPhone" placeholder="0918..."></div>
+      <div class="form-group"><label>ዕድሜ እና ጾታ</label><input type="text" id="patAge" placeholder="28 / ሴት"></div>
+      <div class="form-group"><label>ምርመራ (Diagnosis)</label><input type="text" id="patDiag" placeholder="Typhoid / Acute Tonsillitis"></div>
+      <div class="form-group" style="grid-column:1/-1;"><label>የታዘዘ መድኃኒት (Prescription)</label><input type="text" id="patPresc" placeholder="Amoxicillin 500mg TID for 7 days"></div>
+    </div>
+    <button type="button" class="btn" style="margin-top:12px;" onclick="addPatient()">📋 የታካሚውን መዝገብ አስቀምጥ</button>
+  </div>
+  <div class="card">
+    <h3>📋 የታካሚዎች መዝገብ ዝርዝር</h3>
+    <input type="text" class="search-bar" oninput="filterRows(this, 'patientTableBody')" placeholder="🔍 ታካሚ ይፈልጉ...">
+    <table><thead><tr><th>ቀን</th><th>የታካሚ ስም</th><th>ስልክ</th><th>ዕድሜ/ጾታ</th><th>ምርመራ</th><th>የታዘዘ መድኃኒት</th></tr></thead><tbody id="patientTableBody"></tbody></table>
+  </div>
+</div>
 
-📋 የታካሚውን መዝገብ አስቀምጥ
+<div id="secSal" class="sec-panel" style="display:none;">
+  <div class="card">
+    <h3>📈 የዕለት ሽያጭ እና የተጣራ ትርፍ ሪፖርት</h3>
+    <input type="text" class="search-bar" oninput="filterRows(this, 'salesTableBody')" placeholder="🔍 ሽያጭ ይፈልጉ...">
+    <table><thead><tr><th>ሰዓት</th><th>ደንበኛ</th><th>መድኃኒት</th><th>ብዛት</th><th>ጠቅላላ ሽያጭ</th><th>የተጣራ ትርፍ</th><th>ክፍያ</th></tr></thead><tbody id="salesTableBody"></tbody></table>
+  </div>
+</div>
 
+</div>
 
-📋 የታካሚዎች መዝገብ ዝርዝር
-
-ቀን    የታካሚ ስም    ስልክ    ዕድሜ/ጾታ    ምርመራ    የታዘዘ መድኃኒት
-
-📈 የዕለት ሽያጭ እና የተጣራ ትርፍ ሪፖርት
-
-ሰዓት    ደንበኛ    መድኃኒት    ብዛት    ጠቅላላ ሽያጭ    የተጣራ ትርፍ    ክፍያ
-
-TanaCloud Pharmacy
-የሽያጭ ደረሰኝ (Official Sales Receipt)
-
-
-
-🖨️ አትም
-ዝጋ
-
-
+<div id="receiptModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;z-index:2000;">
+  <div class="receipt-box">
+    <div style="text-align:center;border-bottom:2px dashed #0f172a;padding-bottom:10px;margin-bottom:12px;">
+      <h3 id="receiptTitle" style="margin:0;">TanaCloud Pharmacy</h3>
+      <small>የሽያጭ ደረሰኝ (Official Sales Receipt)</small>
+    </div>
+    <div id="receiptContent" style="font-size:13.5px;line-height:1.7;"></div>
+    <div class="no-print" style="margin-top:16px;display:flex;gap:8px;justify-content:center;">
+      <button type="button" class="btn btn-success" onclick="window.print()">🖨️ አትም</button>
+      <button type="button" class="btn btn-danger" onclick="document.getElementById('receiptModal').style.display='none'">ዝጋ</button>
+    </div>
+  </div>
+</div>
 <script id="pharmacy-core-logic">
 function switchPanel(panelId, btn) {
   var list = document.querySelectorAll('.sec-panel');
@@ -382,3 +394,4 @@ loadAll();
 
 </body>
 </html>
+
