@@ -111,7 +111,7 @@
       <button type="button" class="btn" style="margin-top:12px;" onclick="addMedicine()">💾 መድኃኒቱን መዝግብ</button>
     </div>
     <div class="card">
-      <h3>💊 የመድኃኒቶች ሙሉ ክምችት ዝርዝር</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><h3 style="margin:0;border:none;">💊 የመድኃኒቶች ሙሉ ክምችት ዝርዝር</h3><button type="button" class="btn btn-sm" onclick="printSection('secInv', 'የመድኃኒት ክምችት ሪፖርት (Inventory Report)')">🖨️ ክምችቱን አትም (Print)</button></div>
       <input type="text" class="search-bar" oninput="filterRows(this, 'medTableBody')" placeholder="🔍 መድኃኒት ይፈልጉ...">
       <table><thead><tr><th>መድኃኒት</th><th>ምድብ</th><th>መግዣ</th><th>መሸጫ</th><th>ክምችት</th><th>Expiry Date</th><th>ሁኔታ</th><th>ድርጊት</th></tr></thead><tbody id="medTableBody"></tbody></table>
     </div>
@@ -130,15 +130,15 @@
     <button type="button" class="btn" style="margin-top:12px;" onclick="addPatient()">📋 የታካሚውን መዝገብ አስቀምጥ</button>
   </div>
   <div class="card">
-    <h3>📋 የታካሚዎች መዝገብ ዝርዝር</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><h3 style="margin:0;border:none;">📋 የታካሚዎች መዝገብ ዝርዝር</h3><button type="button" class="btn btn-sm" onclick="printSection('secCli', 'የክሊኒክ ታካሚዎች መዝገብ ሪፖርት')">🖨️ ዝርዝሩን አትም (Print)</button></div>
     <input type="text" class="search-bar" oninput="filterRows(this, 'patientTableBody')" placeholder="🔍 ታካሚ ይፈልጉ...">
-    <table><thead><tr><th>ቀን</th><th>የታካሚ ስም</th><th>ስልክ</th><th>ዕድሜ/ጾታ</th><th>ምርመራ</th><th>የታዘዘ መድኃኒት</th></tr></thead><tbody id="patientTableBody"></tbody></table>
+    <table><thead><tr><th>ቀን</th><th>የታካሚ ስም</th><th>ስልክ</th><th>ዕድሜ/ጾታ</th><th>ምርመራ</th><th>የታዘዘ መድኃኒት</th><th>ማዘዣ</th></tr></thead><tbody id="patientTableBody"></tbody></table>
   </div>
 </div>
 
 <div id="secSal" class="sec-panel" style="display:none;">
   <div class="card">
-    <h3>📈 የዕለት ሽያጭ እና የተጣራ ትርፍ ሪፖርት</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;"><h3 style="margin:0;border:none;">📈 የዕለት ሽያጭ እና የተጣራ ትርፍ ሪፖርት</h3><button type="button" class="btn btn-sm" onclick="printSection('secSal', 'የዕለት ሽያጭ እና የተጣራ ትርፍ ሪፖርት')">🖨️ ሪፖርቱን አትም (Print)</button></div>
     <input type="text" class="search-bar" oninput="filterRows(this, 'salesTableBody')" placeholder="🔍 ሽያጭ ይፈልጉ...">
     <table><thead><tr><th>ሰዓት</th><th>ደንበኛ</th><th>መድኃኒት</th><th>ብዛት</th><th>ጠቅላላ ሽያጭ</th><th>የተጣራ ትርፍ</th><th>ክፍያ</th></tr></thead><tbody id="salesTableBody"></tbody></table>
   </div>
@@ -395,3 +395,63 @@ loadAll();
 </body>
 </html>
 
+
+
+<script id="pharmacy-print-addon">
+function printSection(secId, reportTitle) {
+  var brand = localStorage.getItem('pharm_name') || 'TanaCloud Pharmacy & Clinic';
+  var sec = document.getElementById(secId);
+  if (!sec) { return; }
+  var tbl = sec.querySelector('table');
+  if (!tbl) { window.print(); return; }
+  var w = window.open('', '_blank', 'width=900,height=700');
+  w.document.write('<html><head><title>' + reportTitle + '</title>');
+  w.document.write('<style>body{font-family:"Segoe UI",sans-serif;padding:24px;color:#0f172a}h2{margin:0 0 4px 0;color:#0369a1}p{margin:0 0 16px 0;color:#475569;font-size:13px}table{width:100%;border-collapse:collapse;font-size:13px}th{background:#0f172a;color:#fff;padding:9px;text-align:left}td{padding:8px;border-bottom:1px solid #cbd5e1}button{display:none}</style>');
+  w.document.write('</head><body>');
+  w.document.write('<h2>' + brand + '</h2><p>' + reportTitle + ' — ቀን: ' + new Date().toLocaleDateString() + '</p>');
+  w.document.write(tbl.outerHTML);
+  w.document.write('</body></html>');
+  w.document.close();
+  w.focus();
+  setTimeout(function() { w.print(); w.close(); }, 300);
+}
+
+function printRx(name, phone, age, diag, presc, vdate) {
+  var brand = localStorage.getItem('pharm_name') || 'TanaCloud Pharmacy & Clinic';
+  var w = window.open('', '_blank', 'width=520,height=620');
+  w.document.write('<html><head><title>Medical Prescription</title>');
+  w.document.write('<style>body{font-family:"Segoe UI",sans-serif;padding:26px;color:#0f172a}.box{border:2px solid #0284c7;border-radius:10px;padding:20px}h2{margin:0;color:#0369a1;text-align:center}.sub{text-align:center;font-size:12.5px;color:#475569;border-bottom:1.5px dashed #94a3b8;padding-bottom:10px;margin-bottom:14px}.row{margin-bottom:9px;font-size:14px}.rx{background:#f0f9ff;padding:12px;border-left:4px solid #0284c7;margin-top:12px;font-size:14.5px;font-weight:600}.sign{margin-top:28px;text-align:right;font-size:13px}</style>');
+  w.document.write('</head><body><div class="box">');
+  w.document.write('<h2>' + brand + '</h2><div class="sub">የሐኪም መድኃኒት ማዘዣ (Official Medical Prescription)<br>ቀን: ' + vdate + '</div>');
+  w.document.write('<div class="row"><strong>የታካሚ ስም:</strong> ' + name + '</div>');
+  w.document.write('<div class="row"><strong>ስልክ:</strong> ' + phone + ' &nbsp;|&nbsp; <strong>ዕድሜ/ጾታ:</strong> ' + age + '</div>');
+  w.document.write('<div class="row"><strong>ምርመራ (Diagnosis):</strong> ' + diag + '</div>');
+  w.document.write('<div class="rx">Rx (የታዘዘ መድኃኒት):<br>' + presc + '</div>');
+  w.document.write('<div class="sign">የሐኪሙ ፊርማ እና ማህተም: ______________________</div>');
+  w.document.write('</div></body></html>');
+  w.document.close();
+  w.focus();
+  setTimeout(function() { w.print(); w.close(); }, 300);
+}
+
+var origLoadAll = loadAll;
+loadAll = async function() {
+  await origLoadAll();
+  var rows = document.querySelectorAll('#patientTableBody tr');
+  for (var i = 0; i < rows.length; i++) {
+    var cells = rows[i].querySelectorAll('td');
+    if (cells.length === 6) {
+      var vdate = cells[0].innerText;
+      var pname = cells[1].innerText;
+      var pphone = cells[2].innerText;
+      var page = cells[3].innerText;
+      var pdiag = cells[4].innerText;
+      var ppresc = cells[5].innerText;
+      var tdBtn = document.createElement('td');
+      tdBtn.innerHTML = '<button type="button" class="btn btn-sm" onclick="printRx(\'' + pname.replace(/'/g, '') + '\',\'' + pphone.replace(/'/g, '') + '\',\'' + page.replace(/'/g, '') + '\',\'' + pdiag.replace(/'/g, '') + '\',\'' + ppresc.replace(/'/g, '') + '\',\'' + vdate + '\')">🖨️ Rx አትም</button>';
+      rows[i].appendChild(tdBtn);
+    }
+  }
+};
+if (sessionStorage.getItem('pharm_ok') === '1') { loadAll(); }
+</script>
